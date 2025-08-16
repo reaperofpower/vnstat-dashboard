@@ -384,12 +384,14 @@ download_core_files() {
 download_frontend() {
     print_header "Downloading Frontend Files"
     
-    mkdir -p frontend/src/{components,services,utils}
+    mkdir -p frontend/src/{components,services,utils,contexts,styles}
     mkdir -p frontend/public
     
     # Package files
     download_file "$BASE_URL/frontend/package.json" "frontend/package.json"
     download_file "$BASE_URL/frontend/package-lock.json" "frontend/package-lock.json"
+    download_file "$BASE_URL/frontend/configure-frontend.sh" "frontend/configure-frontend.sh"
+    chmod +x frontend/configure-frontend.sh
     
     # Public files
     download_file "$BASE_URL/frontend/public/index.html" "frontend/public/index.html"
@@ -405,6 +407,11 @@ download_frontend() {
     download_file "$BASE_URL/frontend/src/components/ServerCard.js" "frontend/src/components/ServerCard.js"
     download_file "$BASE_URL/frontend/src/components/LoadingSpinner.js" "frontend/src/components/LoadingSpinner.js"
     download_file "$BASE_URL/frontend/src/components/ErrorDisplay.js" "frontend/src/components/ErrorDisplay.js"
+    download_file "$BASE_URL/frontend/src/components/VersionFooter.js" "frontend/src/components/VersionFooter.js"
+    download_file "$BASE_URL/frontend/src/components/ThemeToggle.js" "frontend/src/components/ThemeToggle.js"
+    
+    # Contexts
+    download_file "$BASE_URL/frontend/src/contexts/ThemeContext.js" "frontend/src/contexts/ThemeContext.js"
     
     # Services
     download_file "$BASE_URL/frontend/src/services/apiService.js" "frontend/src/services/apiService.js"
@@ -413,6 +420,10 @@ download_frontend() {
     download_file "$BASE_URL/frontend/src/utils/browserCache.js" "frontend/src/utils/browserCache.js"
     download_file "$BASE_URL/frontend/src/utils/dataAggregation.js" "frontend/src/utils/dataAggregation.js"
     download_file "$BASE_URL/frontend/src/utils/formatUtils.js" "frontend/src/utils/formatUtils.js"
+    download_file "$BASE_URL/frontend/src/utils/chartTheme.js" "frontend/src/utils/chartTheme.js"
+    
+    # Styles
+    download_file "$BASE_URL/frontend/src/styles/theme.css" "frontend/src/styles/theme.css"
 }
 
 # Function to download backend files
