@@ -1,6 +1,6 @@
 {
   "name": "vnstat-dashboard",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Real-time vnstat network monitoring dashboard",
   "private": true,
   "dependencies": {

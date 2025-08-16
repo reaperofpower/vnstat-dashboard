@@ -59,7 +59,7 @@ REACT_APP_API_TIMEOUT=30000
 
 # Build Information
 REACT_APP_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-REACT_APP_VERSION=2.0.5
+REACT_APP_VERSION=2.0.6
 EOF
 
     print_status "$GREEN" "✅ Frontend configuration created: $ENV_FILE"

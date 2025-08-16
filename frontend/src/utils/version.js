@@ -1,8 +1,6 @@
-import packageJson from '../../package.json';
-
-// Frontend version from package.json
+// Frontend version from environment variable (set during build)
 export const getFrontendVersion = () => {
-  return packageJson.version;
+  return process.env.REACT_APP_VERSION || '2.0.5';
 };
 
 // Build time (set at build time)
