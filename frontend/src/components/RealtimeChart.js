@@ -44,13 +44,14 @@ const RealtimeChart = ({ servers, refreshTrigger }) => {
     return colors[index % colors.length];
   };
 
-  // Aggregate data into 30-second buckets with timezone normalization
+
+  // Aggregate data into 30-second buckets with timezone correction
   const aggregateRealtimeData = useCallback((rawData) => {
     if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
       return [];
     }
 
-    // Use current time in UTC for bucketing to avoid timezone conflicts with Chart.js
+    // Use current time in browser timezone for bucketing
     const now = new Date();
     const startTime = subMinutes(now, 15); // 15 minutes ago
     const buckets = new Map();
@@ -67,27 +68,45 @@ const RealtimeChart = ({ servers, refreshTrigger }) => {
       });
     }
 
-    // Group data points into buckets using raw timestamps (Chart.js will handle display)
+    // Group data points into buckets with timezone offset correction
     rawData.forEach(point => {
       if (!point.timestamp || (!point.rx_rate && point.rx_rate !== 0) || (!point.tx_rate && point.tx_rate !== 0)) {
         return;
       }
 
-      // Use the timestamp as provided (already normalized by apiService)
-      const pointTime = new Date(point.timestamp);
+      // Parse the timestamp (comes from apiService already normalized)
+      const originalTime = new Date(point.timestamp);
       
-      // Debug: Log timestamp values for debugging
-      if (Math.random() < 0.02) { // Only log 2% of points to avoid spam
-        console.log(`RealtimeChart timestamp - Point: ${point.timestamp}, Parsed: ${pointTime}, Browser timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
+      // Apply timezone offset to align with browser timezone for Chart.js display
+      // This ensures RealtimeChart shows the same time as other components
+      const serverTimezone = apiService.getUserTimezone();
+      const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      
+      // Calculate the difference and adjust
+      // For now, detect the offset by comparing what apiService returns vs browser expectation
+      let adjustedTime = originalTime;
+      
+      // If server timezone differs from browser timezone, adjust the timestamp
+      if (serverTimezone !== browserTimezone) {
+        // Simple approach: if we detect a consistent offset, apply it
+        const sampleServerTime = apiService.normalizeTimestamp(new Date());
+        const sampleBrowserTime = new Date();
+        const detectedOffset = sampleBrowserTime.getTime() - sampleServerTime.getTime();
+        adjustedTime = new Date(originalTime.getTime() + detectedOffset);
+      }
+      
+      // Debug: Log timezone correction
+      if (Math.random() < 0.01) { // Only log 1% of points to avoid spam
+        console.log(`RealtimeChart timezone correction - Original: ${originalTime.toISOString()}, Adjusted: ${adjustedTime.toISOString()}, Server TZ: ${serverTimezone}, Browser TZ: ${browserTimezone}`);
       }
       
       // Filter to last 15 minutes only
-      if (pointTime < startTime) {
+      if (adjustedTime < startTime) {
         return;
       }
 
-      // Use raw time for bucketing
-      const bucketKey = Math.floor(pointTime.getTime() / 30000) * 30000;
+      // Use adjusted time for bucketing
+      const bucketKey = Math.floor(adjustedTime.getTime() / 30000) * 30000;
       const bucket = buckets.get(bucketKey);
       
       if (bucket) {
