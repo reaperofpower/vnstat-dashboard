@@ -114,7 +114,7 @@ const ServerCard = ({ server, refreshTrigger }) => {
         },
         title: {
           display: true,
-          text: `Time (${apiService.getUserTimezoneFast()})`
+          text: `Time (${apiService.getUserTimezone()})`
         }
       },
       y: {

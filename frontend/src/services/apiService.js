@@ -35,47 +35,12 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Get user's timezone with IP-based fallback
-const getUserTimezone = async () => {
-  try {
-    // First try browser's built-in timezone detection
-    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (browserTz && browserTz !== 'UTC') {
-      return browserTz;
-    }
-  } catch (error) {
-    console.warn('Browser timezone detection failed:', error);
-  }
-  
-  try {
-    // Fallback to IP-based timezone detection
-    const response = await fetch('https://wtfismyip.com/json');
-    const data = await response.json();
-    
-    if (data.YourFuckingIPAddress) {
-      // Use a timezone API with the IP
-      const timezoneResponse = await fetch(`http://ip-api.com/json/${data.YourFuckingIPAddress}?fields=timezone`);
-      const timezoneData = await timezoneResponse.json();
-      
-      if (timezoneData.timezone) {
-        console.log('Using IP-based timezone:', timezoneData.timezone);
-        return timezoneData.timezone;
-      }
-    }
-  } catch (error) {
-    console.warn('IP-based timezone detection failed:', error);
-  }
-  
-  // Final fallback to UTC
-  console.warn('All timezone detection methods failed, using UTC');
-  return 'UTC';
-};
-
-// Synchronous version for immediate use (returns browser timezone or UTC)
-const getUserTimezoneFast = () => {
+// Get user's timezone (synchronous, no network calls)
+const getUserTimezone = () => {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   } catch (error) {
+    console.warn('Browser timezone detection failed:', error);
     return 'UTC';
   }
 };
@@ -85,7 +50,7 @@ const normalizeTimestamp = (timestamp) => {
   if (!timestamp) return null;
   
   try {
-    const userTz = getUserTimezoneFast();
+    const userTz = getUserTimezone();
     let date;
     
     // Handle different timestamp formats
@@ -118,7 +83,7 @@ const formatTimestamp = (timestamp, formatString = 'MMM dd, HH:mm:ss') => {
   const normalized = normalizeTimestamp(timestamp);
   if (!normalized) return 'Unknown';
   
-  const userTz = getUserTimezoneFast();
+  const userTz = getUserTimezone();
   return format(normalized, formatString, { timeZone: userTz });
 };
 
@@ -297,7 +262,6 @@ export const apiService = {
 
   // Utility functions
   getUserTimezone,
-  getUserTimezoneFast,
   normalizeTimestamp,
   formatTimestamp
 };

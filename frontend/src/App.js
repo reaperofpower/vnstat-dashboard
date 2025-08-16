@@ -187,7 +187,7 @@ function App() {
         borderRadius: '4px',
         border: '1px solid var(--border-color)'
       }}>
-        Displaying data in your timezone: <strong>{apiService.getUserTimezoneFast()}</strong>
+        Displaying data in your timezone: <strong>{apiService.getUserTimezone()}</strong>
         {lastUpdate && !error && (
           <span style={{ marginLeft: '20px' }}>
             Last updated: {apiService.formatTimestamp(lastUpdate, 'MMM dd, HH:mm:ss')}
