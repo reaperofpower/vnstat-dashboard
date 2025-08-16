@@ -465,6 +465,7 @@ download_frontend() {
     # Package files
     download_file "$BASE_URL/frontend/package.json" "frontend/package.json" || exit 1
     download_file "$BASE_URL/frontend/package-lock.json" "frontend/package-lock.json" || exit 1
+    download_file "$BASE_URL/frontend/.npmrc" "frontend/.npmrc" || exit 1
     download_file "$BASE_URL/frontend/configure-frontend.sh" "frontend/configure-frontend.sh" || exit 1
     chmod +x frontend/configure-frontend.sh
     

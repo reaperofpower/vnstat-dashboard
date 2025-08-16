@@ -2,6 +2,39 @@
 import { format, startOfMinute, startOfHour, startOfDay, addMinutes, addHours, addDays, subHours, subDays, subMinutes } from 'date-fns';
 import { apiService } from '../services/apiService';
 
+// Standardize timestamps to consistent intervals to handle server time differences
+const standardizeTimestamp = (timestamp, timeRange = '1h') => {
+  const date = new Date(timestamp);
+  
+  // Choose interval based on time range
+  let intervalSeconds;
+  switch (timeRange) {
+    case '1h':
+    case '6h':
+      intervalSeconds = 5; // 5-second intervals for short ranges
+      break;
+    case '12h':
+    case '1d':
+      intervalSeconds = 30; // 30-second intervals for medium ranges
+      break;
+    case '3d':
+    case '1w':
+      intervalSeconds = 60; // 1-minute intervals for long ranges
+      break;
+    default:
+      intervalSeconds = 5;
+  }
+  
+  const seconds = date.getSeconds();
+  const standardizedSeconds = Math.floor(seconds / intervalSeconds) * intervalSeconds;
+  
+  // Round to nearest interval
+  const standardized = new Date(date);
+  standardized.setSeconds(standardizedSeconds, 0); // Set seconds and clear milliseconds
+  
+  return standardized;
+};
+
 // Get the appropriate time bucket function based on time range
 const getTimeBucketFunction = (timeRange) => {
   switch (timeRange) {
@@ -85,14 +118,16 @@ export const aggregateDataByTime = (rawData, timeRange) => {
       return;
     }
 
-    const pointTime = apiService.normalizeTimestamp(point.timestamp);
+    const normalizedTime = apiService.normalizeTimestamp(point.timestamp);
     
     // Filter out data points that are outside the requested time range
-    if (pointTime < cutoffTime) {
+    if (normalizedTime < cutoffTime) {
       return;
     }
 
-    const bucketTime = bucketFunction(pointTime);
+    // Standardize timestamp to handle small time differences between servers
+    const standardizedTime = standardizeTimestamp(normalizedTime, timeRange);
+    const bucketTime = bucketFunction(standardizedTime);
     const bucketKey = bucketTime.getTime();
 
     if (!buckets.has(bucketKey)) {
@@ -155,14 +190,16 @@ export const aggregateCombinedServerData = (allServerData, timeRange) => {
         return;
       }
 
-      const pointTime = apiService.normalizeTimestamp(point.timestamp);
+      const normalizedTime = apiService.normalizeTimestamp(point.timestamp);
       
       // Filter out data points that are outside the requested time range
-      if (pointTime < cutoffTime) {
+      if (normalizedTime < cutoffTime) {
         return;
       }
 
-      const bucketTime = bucketFunction(pointTime);
+      // Standardize timestamp to handle small time differences between servers
+      const standardizedTime = standardizeTimestamp(normalizedTime, timeRange);
+      const bucketTime = bucketFunction(standardizedTime);
       const bucketKey = bucketTime.getTime();
 
       if (!buckets.has(bucketKey)) {
