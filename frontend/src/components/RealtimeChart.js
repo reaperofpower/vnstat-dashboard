@@ -50,12 +50,12 @@ const RealtimeChart = ({ servers, refreshTrigger }) => {
       return [];
     }
 
-    // Use normalized current time for consistent bucketing across timezones
-    const now = apiService.normalizeTimestamp(new Date());
+    // Use current time in UTC for bucketing to avoid timezone conflicts with Chart.js
+    const now = new Date();
     const startTime = subMinutes(now, 15); // 15 minutes ago
     const buckets = new Map();
 
-    // Create 30-second buckets for the last 15 minutes using normalized time
+    // Create 30-second buckets for the last 15 minutes
     for (let i = 0; i < 30; i++) {
       const bucketTime = addSeconds(startTime, i * 30);
       const bucketKey = Math.floor(bucketTime.getTime() / 30000) * 30000; // Round to 30-second intervals
@@ -67,18 +67,18 @@ const RealtimeChart = ({ servers, refreshTrigger }) => {
       });
     }
 
-    // Group data points into buckets using normalized timestamps
+    // Group data points into buckets using raw timestamps (Chart.js will handle display)
     rawData.forEach(point => {
       if (!point.timestamp || (!point.rx_rate && point.rx_rate !== 0) || (!point.tx_rate && point.tx_rate !== 0)) {
         return;
       }
 
-      // Normalize the point timestamp to user's timezone
-      const pointTime = apiService.normalizeTimestamp(point.timestamp);
+      // Use the timestamp as provided (already normalized by apiService)
+      const pointTime = new Date(point.timestamp);
       
-      // Debug: Log original vs normalized time for first few points
-      if (Math.random() < 0.01) { // Only log 1% of points to avoid spam
-        console.log(`Timezone normalization - Original: ${point.timestamp}, Normalized: ${pointTime}`);
+      // Debug: Log timestamp values for debugging
+      if (Math.random() < 0.02) { // Only log 2% of points to avoid spam
+        console.log(`RealtimeChart timestamp - Point: ${point.timestamp}, Parsed: ${pointTime}, Browser timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
       }
       
       // Filter to last 15 minutes only
@@ -86,7 +86,7 @@ const RealtimeChart = ({ servers, refreshTrigger }) => {
         return;
       }
 
-      // Use normalized time for consistent bucketing
+      // Use raw time for bucketing
       const bucketKey = Math.floor(pointTime.getTime() / 30000) * 30000;
       const bucket = buckets.get(bucketKey);
       
@@ -238,11 +238,17 @@ const RealtimeChart = ({ servers, refreshTrigger }) => {
             minute: 'HH:mm',
             second: 'HH:mm:ss'
           },
-          unit: 'minute'
+          unit: 'minute',
+          // Force Chart.js to interpret times as UTC to prevent timezone conflicts
+          tooltipFormat: 'HH:mm:ss'
         },
         title: {
           display: true,
           text: `Time (${apiService.getUserTimezone()})`
+        },
+        // Configure to use UTC for consistent display
+        ticks: {
+          source: 'data'
         }
       },
       y: {
