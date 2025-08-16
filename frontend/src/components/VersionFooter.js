@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // Version utilities embedded directly to avoid import issues
 const getFrontendVersion = () => {
-  return process.env.REACT_APP_VERSION || '2.0.7';
+  return process.env.REACT_APP_VERSION || '2.1.3';
 };
 
 const getBuildTime = () => {
