@@ -471,6 +471,7 @@ download_frontend() {
     
     # Public files
     download_file "$BASE_URL/frontend/public/index.html" "frontend/public/index.html"
+    download_file "$BASE_URL/frontend/public/favicon.svg" "frontend/public/favicon.svg"
     
     # Source files
     download_file "$BASE_URL/frontend/src/index.js" "frontend/src/index.js"

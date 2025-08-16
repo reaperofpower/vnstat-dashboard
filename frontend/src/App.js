@@ -122,8 +122,43 @@ function App() {
         flexWrap: 'wrap',
         gap: '15px'
       }}>
-        <h1 style={{ margin: '0', color: 'var(--text-primary)' }}>
-          VnStat Network Dashboard
+        <h1 style={{ 
+          margin: '0', 
+          color: 'var(--text-primary)', 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px',
+          fontSize: '2rem',
+          fontWeight: '600'
+        }}>
+          <svg 
+            width="40" 
+            height="40" 
+            viewBox="0 0 40 40" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+          >
+            {/* Network monitoring icon */}
+            <rect width="40" height="40" rx="8" fill="url(#gradient)" />
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#4CAF50" />
+                <stop offset="100%" stopColor="#45a049" />
+              </linearGradient>
+            </defs>
+            {/* Server/router icon */}
+            <rect x="6" y="8" width="28" height="6" rx="2" fill="white" opacity="0.9" />
+            <circle cx="10" cy="11" r="1" fill="#4CAF50" />
+            <circle cx="13" cy="11" r="1" fill="#4CAF50" />
+            <circle cx="16" cy="11" r="1" fill="#4CAF50" />
+            
+            {/* Network activity lines */}
+            <path d="M8 18 L16 22 L24 18 L32 22" stroke="white" strokeWidth="2" fill="none" opacity="0.8" />
+            <path d="M8 24 L16 28 L24 24 L32 28" stroke="white" strokeWidth="2" fill="none" opacity="0.6" />
+            <path d="M8 30 L16 34 L24 30 L32 34" stroke="white" strokeWidth="2" fill="none" opacity="0.4" />
+          </svg>
+          Network Monitor
         </h1>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
