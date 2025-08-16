@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getFrontendVersion, getBuildTime, getBackendVersion, formatVersionInfo } from '../utils/version';
+import { getFrontendVersion, getBuildTime, getBackendVersion, formatVersionInfo } from './version';
 
 const VersionFooter = () => {
   const [versionInfo, setVersionInfo] = useState({
