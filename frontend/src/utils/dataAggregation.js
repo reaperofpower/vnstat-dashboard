@@ -1,5 +1,6 @@
 // Data aggregation utilities for time-based averaging
 import { format, startOfMinute, startOfHour, startOfDay, addMinutes, addHours, addDays, subHours, subDays, subMinutes } from 'date-fns';
+import { apiService } from '../services/apiService';
 
 // Get the appropriate time bucket function based on time range
 const getTimeBucketFunction = (timeRange) => {
@@ -84,7 +85,7 @@ export const aggregateDataByTime = (rawData, timeRange) => {
       return;
     }
 
-    const pointTime = new Date(point.timestamp);
+    const pointTime = apiService.normalizeTimestamp(point.timestamp);
     
     // Filter out data points that are outside the requested time range
     if (pointTime < cutoffTime) {
@@ -154,7 +155,7 @@ export const aggregateCombinedServerData = (allServerData, timeRange) => {
         return;
       }
 
-      const pointTime = new Date(point.timestamp);
+      const pointTime = apiService.normalizeTimestamp(point.timestamp);
       
       // Filter out data points that are outside the requested time range
       if (pointTime < cutoffTime) {

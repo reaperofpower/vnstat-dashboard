@@ -21,7 +21,7 @@ A complete network monitoring solution that collects, aggregates, and visualizes
 - **Real-time Monitoring**: Live network activity for the last 15 minutes with 30-second intervals
 - **Historical Analysis**: Time-based aggregated views (1h, 6h, 12h, 1d, 3d, 1w)
 - **Multiple Visualizations**: Combined throughput chart + individual server charts
-- **Timezone Normalization**: Displays data in viewer's local timezone
+- **Advanced Timezone Normalization**: Handles multi-timezone deployments seamlessly
 - **Smart Aggregation**: Exactly 60 data points per chart with proper averaging
 - **Mbps Display**: Network throughput shown in megabits per second
 - **Uptime Tracking**: Server uptime percentages based on data points
@@ -395,7 +395,7 @@ sudo journalctl -u vnstat-backend -f
 2. **Combined Chart**: Aggregated view across all servers with selectable time ranges
 3. **Server Cards**: Individual server statistics with expandable historical charts
 4. **Time Range Selection**: 1h, 6h, 12h, 1d, 3d, 1w views
-5. **Timezone Display**: All times shown in viewer's local timezone
+5. **Timezone Normalization**: Multi-timezone server support with unified time buckets
 
 ### Service Management
 
@@ -454,7 +454,28 @@ sudo systemctl start vnstat-agent
 2. **Data Transmission**: Agent sends JSON data to backend API every 5 seconds
 3. **Backend Storage**: API stores data in MySQL with timestamps
 4. **Frontend Queries**: Dashboard fetches and aggregates data from API
-5. **Visualization**: Charts display processed data with timezone normalization
+5. **Visualization**: Charts display processed data with advanced timezone normalization for multi-timezone deployments
+
+## 🌍 Timezone Normalization
+
+VnStat Dashboard includes **advanced timezone normalization** to handle multi-timezone deployments:
+
+### Features
+- **Automatic Detection**: Frontend automatically detects user's local timezone
+- **Unified Time Buckets**: Servers from different timezones are aggregated into consistent time slots
+- **Multi-Timezone Support**: Prevents data separation when servers span multiple timezones
+- **Consistent Aggregation**: All charts use normalized timestamps for accurate historical analysis
+
+### Technical Implementation
+- **Frontend Normalization**: `apiService.normalizeTimestamp()` converts all timestamps to user's local timezone
+- **Time Bucket Alignment**: Data aggregation aligns timestamps before grouping for accurate averaging
+- **Real-time & Historical**: Works for both live monitoring and historical analysis
+- **Chart Integration**: Seamlessly integrated with Chart.js time scales
+
+### Deployment Scenarios
+✅ **Single Timezone**: Works perfectly for traditional single-timezone deployments  
+✅ **Multi-Timezone**: Handles servers across different timezones without data fragmentation  
+✅ **Global Monitoring**: Ideal for worldwide server monitoring with centralized dashboard  
 
 ## 🎯 Performance Features
 
