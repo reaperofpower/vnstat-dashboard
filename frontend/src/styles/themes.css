@@ -1,0 +1,146 @@
+/* Light Theme (Default) */
+:root,
+.light-theme {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9f9f9;
+  --bg-card: #ffffff;
+  --bg-hover: #f5f5f5;
+  --border-color: #eee;
+  --border-light: #ddd;
+  
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-muted: #999;
+  --text-light: #777;
+  
+  --accent-blue: #2196f3;
+  --accent-green: #4caf50;
+  --accent-orange: #ff9800;
+  --accent-red: #f44336;
+  
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  
+  --chart-grid: #e0e0e0;
+  --chart-tooltip-bg: rgba(255, 255, 255, 0.95);
+  --chart-tooltip-border: #ccc;
+}
+
+/* Dark Theme */
+.dark-theme {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-card: #1e1e1e;
+  --bg-hover: #2a2a2a;
+  --border-color: #333;
+  --border-light: #444;
+  
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888;
+  --text-light: #aaa;
+  
+  --accent-blue: #64b5f6;
+  --accent-green: #81c784;
+  --accent-orange: #ffb74d;
+  --accent-red: #e57373;
+  
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.5);
+  
+  --chart-grid: #404040;
+  --chart-tooltip-bg: rgba(30, 30, 30, 0.95);
+  --chart-tooltip-border: #555;
+}
+
+/* Global theme application */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Card theming */
+.card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 2px 4px var(--shadow-light) !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.card:hover {
+  background-color: var(--bg-hover) !important;
+}
+
+/* Input theming */
+select, input {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+select:focus, input:focus {
+  border-color: var(--accent-blue) !important;
+  outline: none !important;
+}
+
+/* Button theming */
+button {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Override specific styles that use hardcoded colors */
+.container h1 {
+  color: var(--text-primary) !important;
+}
+
+.container h2, .container h3 {
+  color: var(--text-primary) !important;
+}
+
+/* Status indicators */
+.status-indicator {
+  transition: background-color 0.3s ease;
+}
+
+/* Chart theming will be handled in chart components */
+.chart-container {
+  background-color: var(--bg-card);
+  transition: background-color 0.3s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-blue);
+}
+
+.theme-toggle:focus {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+/* Icons in theme toggle */
+.theme-icon {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover .theme-icon {
+  transform: scale(1.1);
+}

@@ -1,0 +1,156 @@
+/* Theme CSS Variables */
+:root {
+  /* Light theme (default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9f9f9;
+  --bg-tertiary: #fafafa;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --border-color: #eeeeee;
+  --border-light: #e0e0e0;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --input-bg: #ffffff;
+  --input-border: #cccccc;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --info-color: #2196f3;
+  --chart-grid: rgba(0, 0, 0, 0.1);
+  --chart-text: #333333;
+}
+
+.dark-theme {
+  /* Dark theme variables */
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #242424;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-tertiary: #808080;
+  --border-color: #333333;
+  --border-light: #404040;
+  --card-bg: #1e1e1e;
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --input-bg: #2a2a2a;
+  --input-border: #555555;
+  --success-color: #66bb6a;
+  --warning-color: #ffa726;
+  --error-color: #ef5350;
+  --info-color: #42a5f5;
+  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-text: #ffffff;
+}
+
+/* Base styles using CSS variables */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.card {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px var(--card-shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input elements */
+input, select, textarea {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--input-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--info-color);
+  outline: none;
+}
+
+/* Status colors */
+.status-success { color: var(--success-color); }
+.status-warning { color: var(--warning-color); }
+.status-error { color: var(--error-color); }
+.status-info { color: var(--info-color); }
+
+/* Loading and error components */
+.loading {
+  color: var(--text-secondary);
+}
+
+.error {
+  color: var(--error-color);
+}
+
+/* Chart.js theme updates */
+.dark-theme .chartjs-render-monitor {
+  filter: brightness(0.9);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--info-color);
+}
+
+.theme-toggle:active {
+  transform: scale(0.98);
+}
+
+/* Dark mode specific adjustments */
+.dark-theme .server-grid {
+  gap: 20px;
+}
+
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3 {
+  color: var(--text-primary);
+}
+
+/* Timezone info bar */
+.timezone-info {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Version footer */
+.version-footer {
+  background-color: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-tertiary);
+}
+
+.version-details {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+}
+
+/* Smooth transitions for all theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
