@@ -59,7 +59,7 @@ REACT_APP_API_TIMEOUT=30000
 
 # Build Information
 REACT_APP_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-REACT_APP_VERSION=2.0.0
+REACT_APP_VERSION=2.0.1
 EOF
 
     print_status "$GREEN" "✅ Frontend configuration created: $ENV_FILE"
@@ -113,18 +113,47 @@ main() {
             return 1
         fi
         print_status "$YELLOW" "⚠️  Could not find API key in backend configuration"
-        echo "Please ensure the backend is properly configured first."
         echo ""
+        print_status "$BLUE" "Backend Configuration Options:"
+        echo "1. Install backend locally (if not installed)"
+        echo "2. Configure for remote backend server"
+        echo ""
+        echo -n "Choose option (1 or 2): "
+        read -r choice
+        
+        case "$choice" in
+            1)
+                print_status "$BLUE" "Installing backend locally..."
+                echo "Run: ./service-manager.sh install backend"
+                echo "Then run this script again to auto-configure."
+                return 0
+                ;;
+            2)
+                print_status "$BLUE" "Remote Backend Configuration"
+                ;;
+            *)
+                print_status "$RED" "Invalid option"
+                return 1
+                ;;
+        esac
     fi
     
-    # Manual configuration
+    # Manual/Remote configuration
     print_status "$BLUE" "Manual Configuration"
     echo ""
     
-    echo -n "Backend URL (default: http://localhost:3000/api): "
+    echo -n "Backend URL (e.g. http://192.168.1.100:3000/api or http://localhost:3000/api): "
     read -r backend_url
-    backend_url=${backend_url:-http://localhost:3000/api}
+    if [ -z "$backend_url" ]; then
+        backend_url="http://localhost:3000/api"
+        print_status "$BLUE" "Using default: $backend_url"
+    fi
     
+    echo ""
+    echo "Enter the API key from your backend server."
+    echo "You can find it by running on the backend server:"
+    echo "  cat /opt/vnstat-dashboard/backend/config.js | grep key"
+    echo "  or: journalctl -u vnstat-backend | grep API"
     echo -n "API Key: "
     read -r api_key
     
@@ -153,7 +182,15 @@ if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "  --help    Show this help"
     echo ""
     echo "This script configures the frontend with the correct API key and backend URL."
-    echo "It will try to automatically detect the API key from the backend configuration."
+    echo "It supports both local and remote backend configurations:"
+    echo ""
+    echo "Local Backend:"
+    echo "  - Automatically detects API key from local backend config.js"
+    echo "  - Offers to install backend if not found"
+    echo ""
+    echo "Remote Backend:"
+    echo "  - Prompts for backend URL and API key"
+    echo "  - Provides commands to retrieve API key from remote server"
     exit 0
 fi
 
