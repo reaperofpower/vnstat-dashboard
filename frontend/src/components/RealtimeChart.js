@@ -242,7 +242,7 @@ const RealtimeChart = ({ servers, refreshTrigger }) => {
         },
         title: {
           display: true,
-          text: `Time (${apiService.getUserTimezone()})`
+          text: `Time (${apiService.getUserTimezoneFast()})`
         }
       },
       y: {

@@ -209,7 +209,7 @@ const CombinedChart = ({ servers, refreshTrigger }) => {
         },
         title: {
           display: true,
-          text: `Time (${apiService.getUserTimezone()})`
+          text: `Time (${apiService.getUserTimezoneFast()})`
         }
       },
       y: {
@@ -313,7 +313,7 @@ const CombinedChart = ({ servers, refreshTrigger }) => {
         color: '#666', 
         textAlign: 'center' 
       }}>
-        Displaying data in your local timezone: {apiService.getUserTimezone()}<br/>
+        Displaying data in your local timezone: {apiService.getUserTimezoneFast()}<br/>
         Data points are averaged over time buckets • Chart updates every 50-70 seconds (randomized)
       </div>
     </div>
