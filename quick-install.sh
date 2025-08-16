@@ -2,7 +2,7 @@
 
 # VnStat Dashboard Quick Installer
 # Downloads only required files for selected component type
-# Usage: bash <(curl -s https://raw.githubusercontent.com/yourusername/vnstat-dashboard/main/quick-install.sh) [--all|--dashboard|--agent|--frontend|--backend]
+# Usage: bash <(curl -s https://raw.githubusercontent.com/reaperofpower/vnstat-dashboard/main/quick-install.sh) [--all|--dashboard|--agent|--frontend|--backend]
 
 set -e
 
