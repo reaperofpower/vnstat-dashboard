@@ -1,5 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { getFrontendVersion, getBuildTime, getBackendVersion, formatVersionInfo } from './version';
+
+// Version utilities embedded directly to avoid import issues
+const getFrontendVersion = () => {
+  return process.env.REACT_APP_VERSION || '2.0.7';
+};
+
+const getBuildTime = () => {
+  return process.env.REACT_APP_BUILD_TIME || new Date().toISOString();
+};
+
+const getBackendVersion = async () => {
+  try {
+    const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:3000';
+    const healthUrl = API_URL.replace('/api', '') + '/health';
+    const response = await fetch(healthUrl);
+    if (response.ok) {
+      const data = await response.json();
+      return data.version || 'unknown';
+    }
+  } catch (error) {
+    console.warn('Could not fetch backend version:', error);
+  }
+  return 'unknown';
+};
+
+const formatVersionInfo = (frontendVersion, backendVersion, buildTime) => {
+  const buildDate = new Date(buildTime).toLocaleDateString();
+  return {
+    frontend: frontendVersion,
+    backend: backendVersion,
+    buildDate: buildDate,
+    fullInfo: `Frontend: v${frontendVersion} | Backend: v${backendVersion} | Built: ${buildDate}`
+  };
+};
 
 const VersionFooter = () => {
   const [versionInfo, setVersionInfo] = useState({
