@@ -345,26 +345,101 @@ select_components() {
     done
 }
 
-# Function to download file
+# Function to download file with retry and better error handling
 download_file() {
     local url="$1"
     local dest="$2"
+    local retries=3
+    local delay=2
     
     print_status "$BLUE" "Downloading: $(basename "$dest")"
     
+    # Create destination directory if it doesn't exist
+    mkdir -p "$(dirname "$dest")"
+    
+    for ((i=1; i<=retries; i++)); do
+        if command -v curl &> /dev/null; then
+            # Use curl with more lenient settings and timeout
+            if curl -L --connect-timeout 10 --max-time 30 --retry 2 --retry-delay 1 -s "$url" -o "$dest" 2>/dev/null; then
+                if [ -s "$dest" ]; then
+                    return 0
+                fi
+            fi
+        elif command -v wget &> /dev/null; then
+            # Use wget with timeout and retry
+            if wget --timeout=30 --tries=2 --quiet "$url" -O "$dest" 2>/dev/null; then
+                if [ -s "$dest" ]; then
+                    return 0
+                fi
+            fi
+        else
+            print_status "$RED" "Error: curl or wget is required for download"
+            exit 1
+        fi
+        
+        if [ $i -lt $retries ]; then
+            print_status "$YELLOW" "Download failed, retrying in ${delay}s... (attempt $i/$retries)"
+            sleep $delay
+            # Remove failed download
+            rm -f "$dest"
+        fi
+    done
+    
+    print_status "$RED" "Failed to download: $(basename "$dest") after $retries attempts"
+    print_status "$RED" "URL: $url"
+    return 1
+}
+
+# Function to test network connectivity and DNS resolution
+test_connectivity() {
+    print_status "$BLUE" "Testing network connectivity..."
+    
+    # Test DNS resolution first
+    if command -v nslookup &> /dev/null; then
+        if ! nslookup raw.githubusercontent.com &> /dev/null; then
+            print_status "$RED" "DNS resolution failed for raw.githubusercontent.com"
+            print_status "$YELLOW" "Try using different DNS servers (8.8.8.8, 1.1.1.1)"
+            print_status "$YELLOW" "Or check: cat /etc/resolv.conf"
+            return 1
+        fi
+    elif command -v dig &> /dev/null; then
+        if ! dig +short raw.githubusercontent.com &> /dev/null; then
+            print_status "$RED" "DNS resolution failed for raw.githubusercontent.com"
+            print_status "$YELLOW" "Try using different DNS servers (8.8.8.8, 1.1.1.1)"
+            return 1
+        fi
+    fi
+    
+    # Test basic connectivity to GitHub
     if command -v curl &> /dev/null; then
-        curl -fsSL "$url" -o "$dest"
+        if ! curl -s --connect-timeout 5 --max-time 10 "https://raw.githubusercontent.com" > /dev/null 2>&1; then
+            print_status "$RED" "Cannot connect to GitHub. Please check your internet connection."
+            print_status "$YELLOW" "Try: ping raw.githubusercontent.com"
+            return 1
+        fi
     elif command -v wget &> /dev/null; then
-        wget -q "$url" -O "$dest"
+        if ! wget --timeout=10 --tries=1 --spider --quiet "https://raw.githubusercontent.com" 2>/dev/null; then
+            print_status "$RED" "Cannot connect to GitHub. Please check your internet connection."  
+            print_status "$YELLOW" "Try: ping raw.githubusercontent.com"
+            return 1
+        fi
     else
         print_status "$RED" "Error: curl or wget is required for download"
         exit 1
     fi
+    
+    print_status "$GREEN" "✅ Network connectivity and DNS resolution OK"
+    return 0
 }
 
 # Function to download core files
 download_core_files() {
     print_header "Downloading Core Files"
+    
+    # Test connectivity first
+    if ! test_connectivity; then
+        exit 1
+    fi
     
     # Create installation directory
     sudo mkdir -p "$INSTALL_DIR"
@@ -372,10 +447,10 @@ download_core_files() {
     cd "$INSTALL_DIR"
     
     # Download core files
-    download_file "$BASE_URL/README.md" "README.md"
-    download_file "$BASE_URL/LICENSE" "LICENSE"
-    download_file "$BASE_URL/.gitignore" ".gitignore"
-    download_file "$BASE_URL/service-manager.sh" "service-manager.sh"
+    download_file "$BASE_URL/README.md" "README.md" || exit 1
+    download_file "$BASE_URL/LICENSE" "LICENSE" || exit 1
+    download_file "$BASE_URL/.gitignore" ".gitignore" || exit 1
+    download_file "$BASE_URL/service-manager.sh" "service-manager.sh" || exit 1
     
     chmod +x service-manager.sh
 }
@@ -388,9 +463,9 @@ download_frontend() {
     mkdir -p frontend/public
     
     # Package files
-    download_file "$BASE_URL/frontend/package.json" "frontend/package.json"
-    download_file "$BASE_URL/frontend/package-lock.json" "frontend/package-lock.json"
-    download_file "$BASE_URL/frontend/configure-frontend.sh" "frontend/configure-frontend.sh"
+    download_file "$BASE_URL/frontend/package.json" "frontend/package.json" || exit 1
+    download_file "$BASE_URL/frontend/package-lock.json" "frontend/package-lock.json" || exit 1
+    download_file "$BASE_URL/frontend/configure-frontend.sh" "frontend/configure-frontend.sh" || exit 1
     chmod +x frontend/configure-frontend.sh
     
     # Public files
