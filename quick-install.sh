@@ -765,8 +765,19 @@ main() {
             updated_components+=("agent")
         fi
         
+        # Rebuild frontend if updated (required to compile new React code)
+        if [[ "$INSTALL_FRONTEND" == "true" ]]; then
+            print_status "$BLUE" "Rebuilding frontend with new code..."
+            cd "$INSTALL_DIR"
+            if sudo ./service-manager.sh rebuild frontend; then
+                print_status "$GREEN" "✅ Frontend rebuilt successfully"
+            else
+                print_status "$YELLOW" "⚠️  Frontend rebuild failed - you may need to rebuild manually"
+            fi
+        fi
+        
         # Ask if user wants to restart services
-        echo -n "Restart services now? (y/n): "
+        echo -n "Restart remaining services now? (y/n): "
         read -r restart_now
         if [[ "$restart_now" =~ ^[Yy]$ ]]; then
             restart_services "${updated_components[@]}"
